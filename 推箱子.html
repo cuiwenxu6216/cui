@@ -1,0 +1,220 @@
+<html>  
+    <head>  
+        <title>方块的移动</title>  
+        <script src="../js/jscex.jscexRequire.min.js" type="text/javascript"></script>  
+        <style type="text/css">  
+            body{margin:0px;padding:0px;}  
+            #main{margin: 100 auto 0 auto;border: 10px solid #030303;width:300px;height:460px;border-radius:10px;}  
+        </style>  
+    </head>  
+      
+    <body>  
+        <div id="main">  
+            <canvas id="mc" width="300px" height="460px">  
+            </canvas>  
+        </div>  
+        <script type="text/javascript">  
+            var canvas = document.getElementById('mc');  
+            var cxt = canvas.getContext('2d');  
+            //定义背景的颜色  
+            function init_background(){  
+                cxt.fillStyle = "#6A6C6C";  
+                cxt.fillRect(0,0,canvas.width,canvas.height);  
+                cxt.fill();  
+            }  
+            //定义移动的红方块  
+            var red_diamond = {  
+                x : 200,  
+                y : 100,  
+                width : 20,  
+                height : 20,  
+                color : "#FC0000"  
+            }  
+            //初始化红小方块的方法  
+            function  init_red_diamond(){  
+                cxt.fillStyle = red_diamond.color;  
+                cxt.fillRect(red_diamond.x,red_diamond.y,red_diamond.width,red_diamond.height);  
+                cxt.fill();  
+            }  
+            //定义将被空方块移动的黄方块  
+            var yellow_diamond = {  
+                x : 100,  
+                y : 200,  
+                width : 20,  
+                height : 20,  
+                color : "#F2FA0A"  
+            }  
+            //初始化黄小方块的方法  
+            function  init_yellow_diamond(){  
+                cxt.fillStyle = yellow_diamond.color;  
+                cxt.fillRect(yellow_diamond.x,yellow_diamond.y,yellow_diamond.width,yellow_diamond.height);  
+                cxt.fill();  
+            }  
+            //消除黄小方块的方法  
+            function clear_yellow_diamond(){  
+                cxt.fillStyle = "#6A6C6C";  
+              cxt.fillRect(yellow_diamond.x,yellow_diamond.y,yellow_diamond.width,yellow_diamond.height);  
+                cxt.fill();  
+            }  
+            //消除红小方块的方法  
+            function clear_red_diamond(){  
+                cxt.fillStyle = "#6A6C6C";  
+              cxt.fillRect(red_diamond.x,red_diamond.y,red_diamond.width,red_diamond.height);  
+                cxt.fill();  
+            }  
+            //定义四个方法，分别控制红小方块四个方向的移动  
+            function move_right_red_diamond (){//右边  
+                if(red_diamond.x + red_diamond.width + 5 <= canvas.width){     
+                    //清除以前的方块  
+                clear_red_diamond();  
+                cxt.fillStyle = red_diamond.color;  
+                red_diamond.x += 20;  
+                cxt.fillRect(red_diamond.x,red_diamond.y,red_diamond.width,red_diamond.height);  
+                cxt.fill();  
+            }  
+            }  
+            function move_left_red_diamond(){  
+                if(red_diamond.x - 5 >= 0 ){  
+                    //清除以前的方块  
+                clear_red_diamond();  
+                cxt.fillStyle = red_diamond.color;  
+                red_diamond.x -= 20;  
+                cxt.fillRect(red_diamond.x,red_diamond.y,red_diamond.width,red_diamond.height);  
+                cxt.fill();  
+              }  
+            }  
+            function move_up_red_diamond(){  
+                if(red_diamond.y - 5 >= 0 ){  
+                    //清除以前的方块  
+                clear_red_diamond();  
+                cxt.fillStyle = red_diamond.color;  
+                red_diamond.y -= 20;  
+                cxt.fillRect(red_diamond.x,red_diamond.y,red_diamond.width,red_diamond.height);  
+                cxt.fill();  
+              }  
+            }  
+            function move_down_red_doamond(){  
+                if(red_diamond.y + red_diamond.height + 5 <= canvas.height){   
+                    //清除以前的方块  
+                clear_red_diamond();  
+                cxt.fillStyle = red_diamond.color;  
+                red_diamond.y += 20;  
+                cxt.fillRect(red_diamond.x,red_diamond.y,red_diamond.width,red_diamond.height);  
+                cxt.fill();  
+              }  
+            }  
+            //定义一个方法用户判断红方块在小方块的哪一方  
+            var red_diamond_to_yellow_diamond = "";  
+            function red_diamond_position (){  
+                if(red_diamond.x + red_diamond.width == yellow_diamond.x && red_diamond.y == yellow_diamond.y){  
+                    red_diamond_to_yellow_diamond = "left";  
+                }  
+                if(red_diamond.x == yellow_diamond.x + yellow_diamond.width && red_diamond.y == yellow_diamond.y){  
+                    red_diamond_to_yellow_diamond = "right";  
+                }  
+                if(red_diamond.y + red_diamond.height == yellow_diamond.y && red_diamond.x == yellow_diamond.x){  
+                    red_diamond_to_yellow_diamond = "top";  
+                }  
+                if(red_diamond.y == yellow_diamond.y + yellow_diamond.height && red_diamond.x == yellow_diamond.x){  
+                    red_diamond_to_yellow_diamond = "down";  
+                }  
+            }  
+            //定义四个方法来移动黄色小方块  
+            function move_right_yellow_diamond (){//右边  
+                if(yellow_diamond.x + yellow_diamond.width + 5 <= canvas.width){   
+                    //清除以前的方块  
+                clear_yellow_diamond();  
+                cxt.fillStyle = yellow_diamond.color;  
+                yellow_diamond.x += 20;  
+                cxt.fillRect(yellow_diamond.x,yellow_diamond.y,yellow_diamond.width,yellow_diamond.height);  
+                cxt.fill();  
+            }  
+            }  
+            function move_left_yellow_diamond(){  
+                if(yellow_diamond.x - 5 >= 0 ){  
+                    //清除以前的方块  
+                clear_yellow_diamond();  
+                cxt.fillStyle = yellow_diamond.color;  
+                yellow_diamond.x -= 20;  
+                cxt.fillRect(yellow_diamond.x,yellow_diamond.y,yellow_diamond.width,yellow_diamond.height);  
+                cxt.fill();  
+              }  
+            }  
+            function move_up_yellow_diamond(){  
+                if(yellow_diamond.y - 5 >= 0 ){  
+                    //清除以前的方块  
+                clear_yellow_diamond();  
+                cxt.fillStyle = yellow_diamond.color;  
+                yellow_diamond.y -= 20;  
+                cxt.fillRect(yellow_diamond.x,yellow_diamond.y,yellow_diamond.width,yellow_diamond.height);  
+                cxt.fill();  
+              }  
+            }  
+            function move_down_yellow_doamond(){  
+                if(yellow_diamond.y + yellow_diamond.height + 5 <= canvas.height){     
+                    //清除以前的方块  
+                clear_yellow_diamond();  
+                cxt.fillStyle = yellow_diamond.color;  
+                yellow_diamond.y += 20;  
+                cxt.fillRect(yellow_diamond.x,yellow_diamond.y,yellow_diamond.width,yellow_diamond.height);  
+                cxt.fill();  
+              }  
+            }  
+              
+            //获取键盘点击的事件，以判断小方块想哪里移动  
+            var direction = "";    
+        document.onkeydown = function (e) {   
+            red_diamond_position();   
+              if (e.keyCode == 39 ){  
+                if(red_diamond_to_yellow_diamond == "left" && red_diamond.x + red_diamond.width * 2 + 5 <= canvas.width ){  
+                    move_right_yellow_diamond();          
+                    move_right_red_diamond();  
+                }else{  
+                    if(red_diamond_to_yellow_diamond != "left"){  
+                        red_diamond_to_yellow_diamond = "";  
+                        move_right_red_diamond();  
+                    }     
+                }  
+              };    
+          if (e.keyCode == 37 ) {  
+            if(red_diamond_to_yellow_diamond == "right" && red_diamond.x - 5 - red_diamond.width >= 0){  
+                move_left_yellow_diamond();       
+                    move_left_red_diamond();  
+            }else{  
+                if(red_diamond_to_yellow_diamond != "right"){  
+                    move_left_red_diamond();  
+                    red_diamond_to_yellow_diamond = "";  
+                }  
+            }  
+          };    
+          if (e.keyCode == 38 ){  
+            if(red_diamond_to_yellow_diamond == "down" && red_diamond.y - 5 - red_diamond.height >= 0){  
+                move_up_yellow_diamond();  
+                move_up_red_diamond();  
+            }else{  
+                if(red_diamond_to_yellow_diamond != "down"){  
+                    move_up_red_diamond();                
+                    red_diamond_to_yellow_diamond = "";  
+                }  
+            }  
+          };    
+                if (e.keyCode == 40 ){  
+                    if(red_diamond_to_yellow_diamond == "top" && red_diamond.y + red_diamond.height * 2 + 5 <= canvas.height){  
+                move_down_yellow_doamond();   
+                move_down_red_doamond();  
+            }else{  
+                if(red_diamond_to_yellow_diamond != "top"){  
+                    move_down_red_doamond();  
+                    red_diamond_to_yellow_diamond = "";  
+                }  
+            }  
+                };    
+            }  
+            //初始化  
+            init_background();  
+            init_red_diamond();  
+            init_yellow_diamond();  
+            move_diamond();  
+        </script>  
+    </body>  
+</html>  

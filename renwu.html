@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	
+</body>
+<script>
+	// ele.onclick = function(a){
+	// 	//a:代表 event 对象
+	// 	var e = a || window.a;
+	// }
+	// //滚轮事件  原生的兼容
+	// //触屏事件及测试
+	
+	var fullname = 'John Doe';
+	var obj = {
+		fullname: 'Colin Ihrig',
+		prop: {
+			fullname: 'Aurelio De Rosa',
+			getFullname: function() {
+				return this.fullname;
+			}
+		}
+	};
+	console.log(obj.prop.getFullname());
+	var test = obj.prop.getFullname;
+	console.log(test());
+
+</script>
+</html>
