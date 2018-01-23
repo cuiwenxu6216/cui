@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+	<head>
+		<meta charset="UTF-8">
+		<title>五子棋</title>
+		<style>
+			#myCanvas {
+				display: block;
+				margin: 0 auto;
+				background:rgb(200,155,117);
+				/*background:rgba(109,109,109,0.5);*/
+				box-shadow: 0 0 10px 10px black;
+			}
+		</style>
+	</head>
+
+	<body>
+		<canvas id="myCanvas" width="800" height="800"></canvas>
+	</body>
+	<script type="text/javascript">
+		var mc = document.getElementById('myCanvas');
+		var ctx = mc.getContext('2d');
+		var chess = [] //棋子数组
+		var color = 'black'; //棋子的颜色
+		var pos; //棋子位置
+		var x;
+		var y;
+		var x0, y0;
+		var chessData = new Array(15); //二维数组存储棋盘落子信息,初始化数组chessData值为0即此处没有棋子，1为白棋，2为黑棋
+		for(var i = 0; i < 15; i++) {
+			chessData[i] = new Array(15);
+			for(var j = 0; j < 15; j++) {
+				chessData[i][j] = 0;
+			}
+		}
+		//判断点击事件  1：游戏开始页面 2：游戏页面 3：游戏结束页面
+		var flag = 1;
+		//绘制开始页面
+		function drawStartPage() {
+			ctx.beginPath();
+			ctx.font = '60px Arial';
+			ctx.fillStyle = 'red';
+			ctx.fillText('五子棋', 300, 400);
+
+			ctx.beginPath();
+			ctx.font = '30px Arial';
+
+			ctx.fillText('点击游戏页面任何位置开始游戏', 180, 450);
+		}
+		drawStartPage();
+		//绘制棋盘
+		function drawTable() {
+			for(var i = 1; i < 16; i++) {
+				//列的绘制
+				ctx.beginPath();
+				ctx.strokeStyle = 'black';
+				ctx.moveTo(50 * i, 50);
+				ctx.lineTo(50 * i, 750);
+				ctx.stroke();
+				//行的绘制
+				ctx.beginPath();
+				ctx.strokeStyle = 'black';
+				ctx.moveTo(50, 50 * i);
+				ctx.lineTo(750, 50 * i);
+				ctx.stroke();
+			}
+		}
+		//		drawTable();
+		//棋子类
+		function Qi(x, y) {
+			this.x = x;
+			this.y = y;
+		}
+		//绘制一个棋子
+		Qi.prototype.drawQi = function() {
+				ctx.beginPath();
+				ctx.fillStyle = color;
+				ctx.arc(this.x * 50, this.y * 50, 20, 0, 2 * Math.PI);
+				ctx.fill();
+			}
+			//实例化一个棋子
+		function createQi() {
+			//画黑色棋子
+			if(color == 'black') {
+				var qi = new Qi(x, y);
+				qi.drawQi();
+				color = 'white';
+				chessData[x0][y0] = 1;
+			} else {
+				var qi = new Qi(x, y);
+				qi.drawQi();
+				console.log(x0, y0);
+				chessData[x0][y0] = 2;
+				color = 'black';
+
+			}
+			pos = [x, y];
+			chess.push(pos);
+			//			console.log(chess);
+
+		}
+		//绘制棋子
+		//下棋
+
+		//****************************************************
+		//判断点击事件  1：游戏开始页面 2：游戏页面 3：游戏结束页面
+		var flag = 1;
+		drawTable();
+		mc.onclick = function() {
+			if(flag == 1) {
+				
+				ctx.clearRect(0, 0, 800, 800);
+				drawTable();
+				flag = 2;
+			} else if(flag == 2) {
+				gameStart();
+			}
+
+		}
+
+		//***********************************************************
+		function gameStart() {
+			//获取棋子的x,y
+			var e = event || window.event;
+//			x = (Math.round((e.clientX - mc.offsetLeft) / 50)); //行，这里是从1 开始的
+//			y = (Math.round((e.clientY - mc.offsetTop) / 50)); //列，这里是从1开始的
+			
+			x = (Math.round((e.pageX - mc.offsetLeft) / 50)); //行，这里是从1 开始的
+			y = (Math.round((e.pageY - mc.offsetTop) / 50)); //列，这里是从1开始的
+			x0 = x - 1;
+			y0 = y - 1;
+			console.log(x0, y0);
+			var x1 = 50 * x;
+			var y1 = 50 * y;
+			console.log(x1, y1);
+			//超出棋盘边界点击，棋子不会落在棋盘外面
+			if(x1 >= 50 && x1 <= 750 && y1 >= 50 && y1 <= 750) {
+				judgeQ();
+				isWin(color, x0, y0);
+				console.log(chessData);
+			}
+		}
+		//判断是否有棋子
+		function judgeQ() {
+			if(chess.length == 0) {
+				createQi();
+			} else {
+				for(var i = 0; i < chess.length; i++) {
+					if(chess[i][0] == x && chess[i][1] == y) {
+						console.log('这里已有棋子');
+						break;
+					}
+				}
+				if(i == chess.length) {
+					createQi();
+				}
+
+			}
+
+		}
+
+		//**************************************************************
+		//判断输赢
+		function isWin(color, x0, y0) {
+			var color1;
+			if(color == 'black') {
+				color1 = 'white';
+			} else {
+				color1 = 'black';
+			}
+			console.log("判断" + color1 + "(" + x0 + "," + y0 + ")是否胜利");
+			var temp = 1; //默认为黑色
+			if(color == "black") {
+				temp = 2;
+			} //白色
+			console.log("temp=" + temp);
+			lrCount(temp, x0, y0);
+			tbCount(temp, x0, y0);
+			rtCount(temp, x0, y0);
+			rbCount(temp, x0, y0);
+		}
+
+		//横向判断
+		function lrCount(temp, x0, y0) {
+			try {
+				//绘出赢的那一条直线，其中两个点为（line[0],[lin[1]]和 line[2],lin[3]）
+				var line = new Array(4);
+				var count = 0;
+				//横向向左寻找 x0 = x-1 [6,6]
+				for(var i = x0; i >= 0; i--) {
+					line[0] = i + 1; //line[0] = 0
+					line[1] = y0; //line[1] = 6
+					if(chessData[i][y0] == temp) {
+						++count;
+					} else {
+						i = -1;
+					}
+				}
+				//横向向右寻找
+				for(var i = x0; i <= 14; i++) {
+					line[2] = i - 1; //line[2] = 7;
+					line[3] = y0; //lin[3] = 6
+					console.log(i);
+					console.log(line[2], line[3]);
+					if(chessData[i][y0] == temp) {
+						++count;
+					} else {
+						i = 100;
+					}
+
+					console.log(count);
+				}
+				success(line[0], line[1], line[2], line[3], temp, --count);
+				console.log(line);
+			} catch(e) {
+				//111
+			}
+
+		}
+		//纵向判断
+		//纵向向上找
+		function tbCount(temp, x0, y0) {
+			try {
+				var line = new Array(4);
+				var count = 0;
+				for(var i = y0; i >= 0; i--) {
+					line[0] = x0;
+					line[1] = i + 1;
+					if(chessData[x0][i] == temp) {
+						++count;
+					} else {
+						i = -1;
+					}
+				}
+				//纵向向下找
+				for(var i = y0; i <= 14; i++) {
+					line[2] = x0;
+					line[3] = i - 1;
+					if(chessData[x0][i] == temp) {
+						++count;
+					} else {
+						i = 100;
+					}
+				}
+				success(line[0], line[1], line[2], line[3], temp, --count);
+				var line = new Array(4);
+				var count = 0;
+				for(var i = y0; i >= 0; i--) {
+					line[0] = x0;
+					line[1] = i + 1;
+					if(chessData[x0][i] == temp) {
+						++count;
+					} else {
+						i = -1;
+					}
+				}
+				//纵向向下找
+				for(var i = y0; i <= 14; i++) {
+					line[2] = x0;
+					line[3] = i - 1;
+					if(chessData[x0][i] == temp) {
+						++count;
+					} else {
+						i = 100;
+					}
+				}
+				success(line[0], line[1], line[2], line[3], temp, --count);
+			} catch(e) {
+				//TODO handle the exception
+			}
+
+		}
+		//左斜判断
+		function rtCount(temp, x0, y0) {
+			try {
+				var line = new Array(4);
+				var count = 0;
+				//向右上角寻找
+				for(var i = x0, j = y0; i <= 14 && j >= 0;) {
+					line[0] = i - 1;
+					line[1] = j + 1;
+					if(chessData[i][j] == temp) {
+						++count;
+					} else {
+						i = 100;
+					}
+					i++;
+					j--;
+				}
+				//向左上角寻找
+				for(var i = x0, j = y0; i >= 0 && j <= 14;) {
+					line[2] = i + 1;
+					line[3] = j - 1;
+					if(chessData[i][j] == temp) {
+						++count;
+					} else {
+						i = -1;
+					}
+					i--;
+					j++;
+				}
+				success(line[0], line[1], line[2], line[3], temp, --count);
+			} catch(e) {
+				//TODO handle the exception
+			}
+		}
+
+		function rbCount(temp, x0, y0) {
+			try {
+				//右斜判断
+				var line = new Array(4);
+				var count = 0;
+				//向左上角判断
+				for(var i = x0, j = y0; i >= 0 && j >= 0;) {
+					line[0] = i + 1;
+					line[1] = j + 1;
+					if(chessData[i][j] == temp) {
+						++count;
+					} else {
+						i = -1;
+					}
+					i--;
+					j--;
+				}
+				//向右下角寻找
+				for(var i = x0, j = y0; i <= 14 && j <= 14;) {
+					line[2] = i - 1;
+					line[3] = j - 1;
+					if(chessData[i][j] == temp) {
+						++count;
+					} else {
+						i = 100;
+					}
+					i++;
+					j++;
+				}
+				success(line[0], line[1], line[2], line[3], temp, --count);
+			} catch(e) {
+				//TODO handle the exception
+			}
+
+		}
+
+		function success(a, b, c, d, temp, count) {
+			if(count >= 5) { //因为落子点重复计算了一次
+				console.log("此局游戏结束啦");
+				console.log("(" + a + "," + b + ")" + "到" + "(" + c + "," + d + ")");
+
+				ctx.beginPath();
+				ctx.lineWidth = 10;
+				ctx.strokeStyle = 'deepskyblue';
+				ctx.moveTo(50 * a + 50, 50 * b + 50);
+				ctx.lineTo(50 * c + 50, 50 * d + 50);
+				ctx.closePath();
+				ctx.stroke();
+
+				winner = "白棋胜利!";
+				if(temp == 1) {
+					winner = "黑棋胜利!";
+				}
+				alert(winner);
+				
+				
+				gameOver();
+
+			}
+		}
+
+		function gameOver() {
+			mc.onclick = null;
+			//结束显示页面
+			ctx.beginPath();
+			ctx.font = '60px Arial';
+			ctx.fillStyle = 'yellow';
+			ctx.fillText('游戏结束', 300, 400);
+
+			ctx.beginPath();
+			ctx.font = '40px Arial';
+			ctx.fillStyle = 'red';
+			ctx.fillText('鼠标右击', 180, 450);
+			
+			ctx.beginPath();
+			ctx.font = '20px yellow';
+			ctx.fillStyle = 'springgreen';
+			ctx.fillText('游戏页面任何位置开始游戏', 350, 440);
+			chess = [];
+			chessData = [];
+			flag = 3;
+		}
+		
+		mc.oncontextmenu = function(e){
+			if(e&&e.preventDefault){
+				e.preventDefault();
+			}
+			if(flag == 3){
+				history.go(0);
+			}
+		}
+		
+	</script>
+
+</html>
